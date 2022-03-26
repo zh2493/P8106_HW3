@@ -177,7 +177,9 @@ library(mlbench)
 library(pROC)
 library(AppliedPredictiveModeling)
 library(MASS)
-library(tidyverse)</code></pre>
+library(tidyverse)
+library(vip)
+library(pdp)</code></pre>
 <p>##a</p>
 <pre class="r"><code>auto = read.csv(&quot;D:/columbia/term2/ds2/hw3/auto.csv&quot;) %&gt;% 
   na.omit() %&gt;% 
@@ -342,6 +344,2129 @@ confusionMatrix(data = as.factor(test.pred),
 ##                                           
 ##        &#39;Positive&#39; Class : high            
 ## </code></pre>
+<p>Our confusion matrix shows that, overall fraction of correct predictions, is (55 + 52)/(55 + 3 + 6 + 52) = 0.9224 (95% CI: 0.8578, 0.9639) . The confusion matrix also tells us that our no information rate is 50%, which means that if we had no information and made the same class prediction for all observations, our model would be 50% accurate, which is not very ideal. p-value &lt;2e-16 the accuracy is statistically significantly better than no information rate. Sensitivity : 0.8966, Specificity : 0.9483 , with a positive predictive value of 0.9455 and a negative predictive value of 0.9016.Balanced Accuracy : 0.9224.</p>
+<p>##c Train a multivariate adaptive regression spline (MARS) model</p>
+<pre class="r"><code>set.seed(1)
+ctrl &lt;- trainControl(method = &quot;repeatedcv&quot;,
+                     repeats = 5,
+                     summaryFunction = twoClassSummary,
+                     classProbs = TRUE)
+
+model.mars &lt;- train(x = auto[rowTrain,1:7],
+                    y = auto$mpg_cat[rowTrain],
+                    method = &quot;earth&quot;,
+                    tuneGrid = expand.grid(degree = 1:4, 
+                                           nprune = 2:20),
+                    metric = &quot;ROC&quot;,
+                    trControl = ctrl)</code></pre>
+<pre><code>## Loading required package: earth</code></pre>
+<pre><code>## Warning: package &#39;earth&#39; was built under R version 4.1.2</code></pre>
+<pre><code>## Loading required package: Formula</code></pre>
+<pre><code>## Loading required package: plotmo</code></pre>
+<pre><code>## Warning: package &#39;plotmo&#39; was built under R version 4.1.2</code></pre>
+<pre><code>## Loading required package: plotrix</code></pre>
+<pre><code>## Loading required package: TeachingDemos</code></pre>
+<pre><code>## Warning: package &#39;TeachingDemos&#39; was built under R version 4.1.2</code></pre>
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+<pre class="r"><code>summary(model.mars)</code></pre>
+<pre><code>## Call: earth(x=data.frame[276,7], y=factor.object, keepxy=TRUE,
+##             glm=list(family=function.object, maxit=100), degree=4, nprune=9)
+## 
+## GLM coefficients
+##                                                               high
+## (Intercept)                                             -6.3662029
+## h(250-displacement)                                      0.0639294
+## h(year-72)                                               0.5113057
+## h(4-cylinders) * h(250-displacement)                    -0.1223038
+## h(155-displacement) * h(year-72)                        -0.0066747
+## h(displacement-173) * h(year-72)                        -0.0190100
+## h(displacement-200) * h(year-72)                         0.0188977
+## h(250-displacement) * h(weight-2223) * h(79-year)       -0.0000091
+## h(displacement-200) * h(acceleration-14.9) * h(year-72)  0.0032547
+## 
+## GLM (family binomial, link logit):
+##  nulldev  df       dev  df   devratio     AIC iters converged
+##  382.617 275   65.0558 267       0.83   83.06    16         1
+## 
+## Earth selected 9 of 19 terms, and 5 of 7 predictors (nprune=9)
+## Termination condition: Reached nk 21
+## Importance: displacement, weight, year, cylinders, acceleration, ...
+## Number of terms at each degree of interaction: 1 2 4 2
+## Earth GCV 0.04126038    RSS 9.720855    GRSq 0.8361523    RSq 0.859118</code></pre>
+<pre class="r"><code>plot(model.mars)</code></pre>
+<p><img src="data:image/png;base64,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" width="672" /></p>
+<pre class="r"><code>model.mars$bestTune</code></pre>
+<pre><code>##    nprune degree
+## 65      9      4</code></pre>
+<pre class="r"><code>coef(model.mars$finalModel) </code></pre>
+<pre><code>##                                             (Intercept) 
+##                                           -6.366203e+00 
+##                                     h(250-displacement) 
+##                                            6.392943e-02 
+##                                              h(year-72) 
+##                                            5.113057e-01 
+##                    h(4-cylinders) * h(250-displacement) 
+##                                           -1.223038e-01 
+##                        h(155-displacement) * h(year-72) 
+##                                           -6.674658e-03 
+##                        h(displacement-200) * h(year-72) 
+##                                            1.889772e-02 
+## h(displacement-200) * h(acceleration-14.9) * h(year-72) 
+##                                            3.254669e-03 
+##       h(250-displacement) * h(weight-2223) * h(79-year) 
+##                                           -9.058509e-06 
+##                        h(displacement-173) * h(year-72) 
+##                                           -1.900996e-02</code></pre>
+<p>Earth selected 9 of 19 terms, and 5 of 7 predictors, RSq= 0.859118</p>
+<p>##d Perform LDA, Plot the linear discriminants in LDA</p>
+<pre class="r"><code>lda.fit &lt;- lda(mpg_cat~., data = auto,
+               subset = rowTrain)
+plot(lda.fit)</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAAAzFBMVEUAAAAAACsAAFUAKysAK1UAK4AAVYAAVaoo4uUrAAArKwArKysrK1UrVVUrVYArVaorgIArgNRVAABVKwBVKytVVStVVVVVgIBVgKpVgNRVqqpVqtRVqv+AKwCAKyuAVQCAVSuAgCuAqqqAqtSA1NSA1P+qVQCqVSuqgCuqgFWqgKqqqoCqqqqqqtSq1ICq1NSq1P+q///UgCvUgFXUqlXUqoDUqqrU1IDU1KrU1NTU1P/U/6rU////qlX/1ID/1Kr/1NT//6r//9T///8Rv2giAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3dC3sT93boYTkhhzppSYEcl5bQpjuN96HbORBvSCEH4yB//+90ZkYXy5JtaZb816yZed/nyROQLGlpLj90GcmTKwBCJl0PANBXAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABB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" width="672" /></p>
+<pre class="r"><code>lda.fit$scaling</code></pre>
+<pre><code>##                       LD1
+## cylinders    -0.240625143
+## displacement -0.002823766
+## horsepower    0.013012070
+## weight       -0.001309113
+## acceleration  0.013842643
+## year          0.138831306
+## origin        0.212917246</code></pre>
+<p>two classes, so we have k = 2-1 = 1 linear discriminants.</p>
+<p>Using caret:</p>
+<pre class="r"><code>ctrl &lt;- trainControl(method = &quot;repeatedcv&quot;, repeats = 5,
+                     summaryFunction = twoClassSummary,
+                     classProbs = TRUE)
+
+set.seed(11)
+model.lda &lt;- train(x = auto[rowTrain,1:7],
+                   y = auto$mpg_cat[rowTrain],
+                   method = &quot;lda&quot;,
+                   metric = &quot;ROC&quot;,
+                   trControl = ctrl)
+
+model.lda$results</code></pre>
+<pre><code>##   parameter       ROC     Sens      Spec      ROCSD    SensSD     SpecSD
+## 1      none 0.9588957 0.846044 0.9710989 0.04099279 0.1031846 0.04852375</code></pre>
+<p>the ROC is 0.9588957, Sensitive 0.846044 and Specificity 0.9710989</p>
+<p>##e model comparison, Plot its ROC curve using the test data. Report the AUC and the misclassification error rate.</p>
+<pre class="r"><code>logit_caret = train(x = rowTrain,
+                        y = y,
+                        method = &quot;glm&quot;,
+                        metric = &quot;ROC&quot;,
+                        trControl = ctrl)
+
+res = resamples(list(Logit = logit_caret , 
+                           MARS = model.mars,
+                           LDA = model.lda))
+
+summary(res)</code></pre>
+<pre><code>## 
+## Call:
+## summary.resamples(object = res)
+## 
+## Models: Logit, MARS, LDA 
+## Number of resamples: 50 
+## 
+## ROC 
+##            Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA&#39;s
+## Logit 0.6020408 0.6978022 0.7576531 0.7689711 0.8201531 0.9795918    0
+## MARS  0.9132653 0.9709425 0.9894035 0.9824538 1.0000000 1.0000000    0
+## LDA   0.8214286 0.9438776 0.9629121 0.9588957 0.9948980 1.0000000    0
+## 
+## Sens 
+##            Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA&#39;s
+## Logit 0.4285714 0.6153846 0.7142857 0.6882418 0.7857143 0.9285714    0
+## MARS  0.7857143 0.9230769 0.9285714 0.9392308 1.0000000 1.0000000    0
+## LDA   0.5384615 0.7857143 0.8571429 0.8460440 0.9285714 1.0000000    0
+## 
+## Spec 
+##            Min.   1st Qu.    Median      Mean   3rd Qu. Max. NA&#39;s
+## Logit 0.4285714 0.5714286 0.7032967 0.6724176 0.7554945    1    0
+## MARS  0.8461538 0.9285714 0.9285714 0.9549451 1.0000000    1    0
+## LDA   0.8461538 0.9285714 1.0000000 0.9710989 1.0000000    1    0</code></pre>
+<pre class="r"><code>bwplot(res, metric = &quot;ROC&quot;)</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAAAt1BMVEUAAAAAACsAAFUAKysAK1UAK4AAVaorAAArACsrKwArKysrK1UrVVUrVYArVaorgIArgKorgNRVAABVKwBVKytVVStVVYBVgKpVgNRVqtRVqv+AKwCAKyuAVSuAVVWAgFWAqqqAqtSA1KqA1NSA1P+qVQCqVSuqgCuqgFWqqtSq1ICq1P+q///UgCvUgFXUqlXUqoDU1IDU1KrU1NTU1P/U////qlX/1ID/1Kr/1NT//6r//9T///9gX9/WAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3dbWMbx7mY4ZUsi7XTqLXkE53IdVu3puMei7WaWKQs8v//rgLEC4EFSC0ezOzOzF7Xh0QENczMcHALIBZMdwdASDf1BABqJaAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChDUakC7Vhf2JRY+NxY+pRLmkEMRmzsFC58bC59SCXPIoYjNnYKFz42FT6mEOeRQxOZOwcLnxsKnVMIccihic6dg4XNj4VMqYQ45FLG5U7DwubHwKZUwhxyK2NwpWPjcWPiUSphDDkVs7hQsfG4sfEolzCGHIjZ3ChY+NxY+pRLmkEMRmzsFC58bC59SCXPIoYjNnYKFz42FT6mEOeRQxOZOwcLnxsKnVMIccihic6dg4XNj4VMqYQ45FLG5U7DwubHwKZUwh+M6gNzOzFSa2iU39a4Cs3BmqNL0LrkiHp4DbRNQgCABBQgSUIAgAQUIElCAIAEFCBJQgCABBQgSUIAgAQUIElCAIAEFCBJQgCABBQgSUIAgAQUIElCAIAEFCBJQgCABBQgSUIAgAQUIElCA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WhxcB3r/BP368PKky/vSCij5CSi16AV0/ZajqycC6sJPMhNQarH/Xvi360eXHoEyIQGlFpufgS7f4P7V9h3vRzp5ef/s/uZCQMlNQKnFw4tIy1fgN79K5NFX4df/9eDWL2QiNQGlFjuvwl8/vElz+HWg13u/wAkSEFBqsXsZ09XDO9uHvhNp/aNRSEhAqcVuQJeVXD9zX74X/uX+Xzv6XvjrzoX1pCag1GLvnUjLOr7c3n78tzFd7f02pgsPQElOQKnFVf+XK22exN//PtC3j/w+0K+W/2cetx++9xuVyUBAqcV+QHeexN899hvpP7/Zvf2FJ/CkJqDUovfbmHaexN99eCjl/v8n0k5a/X8ikZ6AUoteQHefxN/d/fOR/1fOP3/1/8pJPgIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQf8fqo/PNvAmA6YAAAAASUVORK5CYII=" width="672" /> through the resampling, the mars has the highest ROC.</p>
+<pre class="r"><code># plot ROC curv, prediction 
+mars_pred &lt;- predict(model.mars, newdata = auto[-rowTrain, 1:7], type = &quot;prob&quot;)[,2]
+roc_mars &lt;- roc(auto$mpg_cat[-rowTrain], mars_pred)</code></pre>
+<pre><code>## Setting levels: control = low, case = high</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+<pre class="r"><code>#AUC and misclassification error rate
+auc_mars = roc_mars$auc[1]
+auc_mars</code></pre>
+<pre><code>## [1] 0.9497622</code></pre>
+<pre class="r"><code>test_pred = rep(&quot;low&quot;, length(mars_pred))
+test_pred[mars_pred &gt; 0.5] = &quot;high&quot;
+confusionMatrix(data = as.factor(test_pred),
+                reference = auto$mpg_cat[-rowTrain],
+                positive = &quot;high&quot;)</code></pre>
+<pre><code>## Warning in confusionMatrix.default(data = as.factor(test_pred), reference =
+## auto$mpg_cat[-rowTrain], : Levels are not in the same order for reference and
+## data. Refactoring data to match.</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction low high
+##       low   50    6
+##       high   8   52
+##                                           
+##                Accuracy : 0.8793          
+##                  95% CI : (0.8058, 0.9324)
+##     No Information Rate : 0.5             
+##     P-Value [Acc &gt; NIR] : &lt;2e-16          
+##                                           
+##                   Kappa : 0.7586          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 0.7893          
+##                                           
+##             Sensitivity : 0.8966          
+##             Specificity : 0.8621          
+##          Pos Pred Value : 0.8667          
+##          Neg Pred Value : 0.8929          
+##              Prevalence : 0.5000          
+##          Detection Rate : 0.4483          
+##    Detection Prevalence : 0.5172          
+##       Balanced Accuracy : 0.8793          
+##                                           
+##        &#39;Positive&#39; Class : high            
+## </code></pre>
+<pre class="r"><code>plot(roc_mars, legacy.axis = TRUE)</code></pre>
+<p><img src="data:image/png;base64,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" width="672" /> above shoews the ROC curve, the AUC 0.9497622. the mars model has a misclassification rate of 1 - 0.9497622</p>
 
 
 

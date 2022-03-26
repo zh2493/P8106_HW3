@@ -18,6 +18,9 @@ library(pROC)
 library(AppliedPredictiveModeling)
 library(MASS)
 library(tidyverse)
+library(vip)
+library(pdp)
+
 ```
 
 
@@ -112,14 +115,99 @@ confusionMatrix(data = as.factor(test.pred),
                 reference = data2$mpg_cat[-rowTrain2],
                 positive = "high")
 ```
+Our confusion matrix shows that, overall fraction of correct predictions, is (55 + 52)/(55 + 3 + 6 + 52)  = 0.9224 (95% CI: 0.8578, 0.9639) . 
+The confusion matrix also tells us that our no information rate is 50%, which means that if we had no information and made the same class prediction for all observations, our model would be 50% accurate, which is not very ideal. 
+p-value <2e-16 the accuracy is statistically significantly better than no information rate. 
+Sensitivity : 0.8966, Specificity : 0.9483 , with a positive predictive value of 0.9455 and a negative predictive value of 0.9016.Balanced Accuracy : 0.9224. 
+
+##c Train a multivariate adaptive regression spline (MARS) model
+```{r}
+set.seed(1)
+ctrl <- trainControl(method = "repeatedcv",
+                     repeats = 5,
+                     summaryFunction = twoClassSummary,
+                     classProbs = TRUE)
+
+model.mars <- train(x = auto[rowTrain,1:7],
+                    y = auto$mpg_cat[rowTrain],
+                    method = "earth",
+                    tuneGrid = expand.grid(degree = 1:4, 
+                                           nprune = 2:20),
+                    metric = "ROC",
+                    trControl = ctrl)
+summary(model.mars)
+plot(model.mars)
+
+model.mars$bestTune
+coef(model.mars$finalModel) 
+```
+Earth selected 9 of 19 terms, and 5 of 7 predictors, RSq= 0.859118
+
+##d Perform LDA, Plot the linear discriminants in LDA
+```{r}
+lda.fit <- lda(mpg_cat~., data = auto,
+               subset = rowTrain)
+plot(lda.fit)
+
+lda.fit$scaling
+
+```
+two classes, so we have k = 2-1 = 1 linear discriminants.
 
 
+Using caret:
+```{r}
+ctrl <- trainControl(method = "repeatedcv", repeats = 5,
+                     summaryFunction = twoClassSummary,
+                     classProbs = TRUE)
 
+set.seed(11)
+model.lda <- train(x = auto[rowTrain,1:7],
+                   y = auto$mpg_cat[rowTrain],
+                   method = "lda",
+                   metric = "ROC",
+                   trControl = ctrl)
 
+model.lda$results
 
+```
+the ROC is 0.9588957, Sensitive 0.846044 and Specificity 0.9710989
 
+##e model comparison, Plot its ROC curve using the test data. Report the AUC and the misclassification error rate.
+```{r}
+logit_caret = train(x = rowTrain,
+                        y = y,
+                        method = "glm",
+                        metric = "ROC",
+                        trControl = ctrl)
 
+res = resamples(list(Logit = logit_caret , 
+                           MARS = model.mars,
+                           LDA = model.lda))
 
+summary(res)
+bwplot(res, metric = "ROC")
+```
+through the resampling, the mars has the highest ROC.
+
+```{r}
+# plot ROC curv, prediction 
+mars_pred <- predict(model.mars, newdata = auto[-rowTrain, 1:7], type = "prob")[,2]
+roc_mars <- roc(auto$mpg_cat[-rowTrain], mars_pred)
+
+#AUC and misclassification error rate
+auc_mars = roc_mars$auc[1]
+auc_mars
+
+test_pred = rep("low", length(mars_pred))
+test_pred[mars_pred > 0.5] = "high"
+confusionMatrix(data = as.factor(test_pred),
+                reference = auto$mpg_cat[-rowTrain],
+                positive = "high")
+
+plot(roc_mars, legacy.axis = TRUE)
+```
+above shoews the ROC curve, the AUC 0.9497622. the mars model has a misclassification rate of 1 - 0.9497622
 
 
 
