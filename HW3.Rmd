@@ -1,0 +1,126 @@
+---
+title: "HW3"
+author: "ZiqianHe"
+date: "3/25/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo = T, message = FALSE, results='hide', warning=FALSE}
+library(caret)
+library(glmnet)
+library(mlbench)
+library(pROC)
+library(AppliedPredictiveModeling)
+library(MASS)
+library(tidyverse)
+```
+
+
+##a
+```{r}
+auto = read.csv("D:/columbia/term2/ds2/hw3/auto.csv") %>% 
+  na.omit() %>% 
+  mutate(mpg_cat = as.factor(mpg_cat),
+         mpg_cat = fct_relevel(mpg_cat, c("low", "high")))
+  
+set.seed(2022)
+#The data is divided into two parts (training and test). 
+rowTrain <- createDataPartition(y = auto$mpg_cat,
+                                p = 0.7,
+                                list = FALSE)
+
+test <- auto[-rowTrain, ]
+# training data
+x <- model.matrix(mpg_cat~.,auto)[rowTrain]
+y <- auto$mpg_cat[rowTrain]
+
+# test data
+x2 <- model.matrix(mpg_cat~.,auto)[-rowTrain]
+y2 <- auto$mpg_cat[-rowTrain]
+```
+
+
+##a Produce some graphical or numerical summaries of the data.
+```{r}
+summary(auto)
+theme1 <- transparentTheme(trans = .4)
+trellis.par.set(theme1)
+
+#plot of continuous variables
+featurePlot(x = auto[, 1:7], 
+            y = auto$mpg_cat,
+            scales = list(x = list(relation = "free"), 
+                          y = list(relation = "free")),
+            plot = "density", pch = "|", 
+            auto.key = list(columns = 2))
+
+#plot of categorical variables
+auto %>% 
+    mutate(
+    origin = case_when(origin == "1" ~ "American",
+                       origin == "2" ~ "European",
+                       origin == "3" ~ "Japanese"),
+    origin = as.factor(origin),
+    mpg_cat = as.factor(mpg_cat),
+    mpg_cat = fct_relevel(mpg_cat, "low")
+  ) %>%
+  dplyr::select(-displacement, -horsepower, -weight, -acceleration) %>% 
+  ggplot(aes(x = origin, fill = mpg_cat)) + 
+  geom_bar(position = "fill") +
+  labs(x = "Origin",
+       y = "Porpotion of Gas mileage")
+```
+We have 7 predictors. the response is mpg_cat. 
+
+
+##b Perform a logistic regression using the training data
+```{r}
+# Logistic regression
+data2 <-
+  auto %>% 
+  mutate(year = as.factor(year),
+         origin = as.factor(origin))
+set.seed(2)
+rowTrain2 <- createDataPartition(y = data2$mpg_cat,
+                                p = 0.7,
+                                list = FALSE)
+
+glm.fit <- glm(mpg_cat ~ ., 
+               data = data2, 
+               subset = rowTrain2, 
+               family = binomial(link = "logit"))
+
+summary(glm.fit)
+```
+predictors of `weight`, `year73`, `year79-82` and `origin2`are statistically significant.
+
+
+* Compute the confusion matrix and overall fraction of correct predictions using the test data
+```{r}
+#check on the test data
+test.pred.prob <- predict(glm.fit, newdata = data2[-rowTrain2,],
+                           type = "response")
+test.pred <- rep("low", length(test.pred.prob))
+test.pred[test.pred.prob>0.5] <- "high"
+
+confusionMatrix(data = as.factor(test.pred),
+                reference = data2$mpg_cat[-rowTrain2],
+                positive = "high")
+```
+
+
+
+
+
+
+
+
+
+
+
+
